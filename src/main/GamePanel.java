@@ -12,10 +12,10 @@ public class GamePanel extends JPanel implements Runnable {
 
     public final int tileSize = baseTileSize * scale;
 
-    final int maxScreenX = 16;
-    final int maxScreenY = 12;
-    final int screenWidth = tileSize * maxScreenX;
-    final int screenHeight = tileSize * maxScreenY;
+    public final int maxScreenTilesX = 16;
+    public final int maxScreenTilesY = 12;
+    public final int screenWidth = tileSize * maxScreenTilesX;
+    public final int screenHeight = tileSize * maxScreenTilesY;
     final double maxFPS = 60;
 
     KeyHandler keyHandler = new KeyHandler();
