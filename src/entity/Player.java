@@ -12,10 +12,12 @@ import java.util.Objects;
 public class Player extends Entity {
     GamePanel gamePanel;
     KeyHandler keyHandler;
+    GameCharacter gameCharacter;
 
-    public Player(GamePanel gamePanel, KeyHandler keyHandler) {
+    public Player(GamePanel gamePanel, KeyHandler keyHandler, GameCharacter gameCharacter) {
         this.gamePanel = gamePanel;
         this.keyHandler = keyHandler;
+        this.gameCharacter = gameCharacter;
 
         setDefaultValues();
         getPlayerSprites();
@@ -32,43 +34,57 @@ public class Player extends Entity {
 
     public void getPlayerSprites() {
         try {
-            up1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/rhay/rhay_up.png")));
-            up2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/rhay/rhay_up_walk_01.png")));
-            up3 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/rhay/rhay_up_walk_02.png")));
+            String path = "/" + gameCharacter.name + "/" + gameCharacter.name;
 
-            down1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/rhay/rhay_down.png")));
-            down2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/rhay/rhay_down_walk_01.png")));
-            down3 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/rhay/rhay_down_walk_02.png")));
+            up1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_up.png")));
+            up2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_up_walk_01.png")));
+            up3 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_up_walk_02.png")));
 
-            left1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/rhay/rhay_left.png")));
-            left2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/rhay/rhay_left_walk_01.png")));
-            left3 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/rhay/rhay_left_walk_02.png")));
+            down1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_down.png")));
+            down2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_down_walk_01.png")));
+            down3 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_down_walk_02.png")));
 
-            right1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/rhay/rhay_right.png")));
-            right2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/rhay/rhay_right_walk_01.png")));
-            right3 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/rhay/rhay_right_walk_02.png")));
+            left1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_left.png")));
+            left2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_left_walk_01.png")));
+            left3 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_left_walk_02.png")));
+
+            right1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_right.png")));
+            right2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_right_walk_01.png")));
+            right3 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_right_walk_02.png")));
         } catch (IOException e) {
-            // TODO handle error
+            e.printStackTrace();
         }
     }
 
     public void update() {
+        int directionX = 0;
+        int directionY = 0;
+
         if (keyHandler.upPressed) {
             direction = "up";
-            y -= speed;
+            directionY -= 1;
         }
         if (keyHandler.downPressed) {
             direction = "down";
-            y += speed;
+            directionY += 1;
         }
         if (keyHandler.leftPressed) {
             direction = "left";
-            x -= speed;
+            directionX -= 1;
         }
         if (keyHandler.rightPressed) {
             direction = "right";
-            x += speed;
+            directionX += 1;
         }
+
+        double length = Math.sqrt((directionX * directionX) + (directionY * directionY));
+        if (length != 0) {
+            directionX = (int) Math.round(directionX / length * speed);
+            directionY = (int) Math.round(directionY / length * speed);
+        }
+
+        x += directionX;
+        y += directionY;
 
         isMoving = keyHandler.upPressed || keyHandler.downPressed || keyHandler.leftPressed || keyHandler.rightPressed;
         if (isMoving) {

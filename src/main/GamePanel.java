@@ -1,5 +1,6 @@
 package main;
 
+import entity.GameCharacter;
 import entity.Player;
 import tile.TileManager;
 
@@ -20,7 +21,10 @@ public class GamePanel extends JPanel implements Runnable {
 
     KeyHandler keyHandler = new KeyHandler();
     Thread gameThread;
-    Player player = new Player(this, keyHandler);
+
+    GameCharacter defaultCharacter = new GameCharacter("Rhay");
+    Player player = new Player(this, keyHandler, defaultCharacter);
+
     TileManager tileManager = new TileManager(this);
 
     public GamePanel() {
