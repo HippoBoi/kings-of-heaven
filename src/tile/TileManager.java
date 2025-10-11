@@ -35,6 +35,15 @@ public class TileManager {
                 final BufferedImage sprite = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path)));
                 tile[i] = new Tile();
                 tile[i].sprite = sprite;
+                tile[i].name = path;
+                tile[i].layer = 0;
+
+                if (Objects.equals(tile[i].name, "/tiles/outside/tile_02.png")) {
+                    tile[i].layer = 1;
+                }
+                if (Objects.equals(tile[i].name, "/tiles/outside/tile_03.png")) {
+                    tile[i].layer = 1;
+                }
             }
         } catch (IOException e) {
             System.out.println("[ERROR] couldn't get tile images");
@@ -71,7 +80,7 @@ public class TileManager {
         }
     }
 
-    public void draw(Graphics2D graphics2D) {
+    public void draw(Graphics2D graphics2D, int layer) {
         int worldColumns = 0;
         int worldRows = 0;
 
@@ -83,7 +92,17 @@ public class TileManager {
             int screenX = x - gamePanel.player.x + gamePanel.player.screenX;
             int screenY = y - gamePanel.player.y + gamePanel.player.screenY;
 
-            graphics2D.drawImage(tile[tilePos].sprite, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+            Tile curTile = tile[tilePos];
+            Tile defaultTile = tile[0];
+
+            if (curTile.layer == layer) {
+                graphics2D.drawImage(curTile.sprite, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+            }
+
+            if (curTile.layer != layer && curTile.layer == 1) {
+                graphics2D.drawImage(defaultTile.sprite, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+            }
+
             worldColumns += 1;
 
             if (worldColumns == gamePanel.maxWorldX) {

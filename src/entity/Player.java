@@ -25,6 +25,10 @@ public class Player extends Entity {
         screenX = gamePanel.screenWidth / 2 - (gamePanel.tileSize / 2);
         screenY = gamePanel.screenHeight / 2 - (gamePanel.tileSize / 2);
 
+        final int hitboxWidth = gamePanel.tileSize - 4;
+        final int hitboxHeight = gamePanel.tileSize - 4;
+        hitbox = new Rectangle(0, 0, hitboxWidth, hitboxHeight);
+
         setDefaultValues();
         getPlayerSprites();
     }

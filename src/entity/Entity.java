@@ -1,5 +1,6 @@
 package entity;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Entity {
@@ -17,4 +18,7 @@ public class Entity {
     public Boolean isMoving;
 
     public String direction;
+
+    public Rectangle hitbox;
+    public boolean colliding = false;
 }
