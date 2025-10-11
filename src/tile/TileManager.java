@@ -4,10 +4,12 @@ import main.GamePanel;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Objects;
 
 public class TileManager {
     GamePanel gamePanel;
@@ -25,19 +27,17 @@ public class TileManager {
 
     public void getTileImage() {
         try {
-            tile[0] = new Tile();
-            tile[0].sprite = ImageIO.read(getClass().getResourceAsStream("/tiles/grass.png"));
+            final int totalTiles = 4;
 
-            tile[1] = new Tile();
-            tile[1].sprite = ImageIO.read(getClass().getResourceAsStream("/tiles/dirt.png"));
-
-            tile[2] = new Tile();
-            tile[2].sprite = ImageIO.read(getClass().getResourceAsStream("/tiles/vegetation_01_a.png"));
-
-            tile[3] = new Tile();
-            tile[3].sprite = ImageIO.read(getClass().getResourceAsStream("/tiles/vegetation_01_b.png"));
+            String scene = gamePanel.gameScene.getSceneName();
+            for (int i = 0; i < totalTiles; i++) {
+                final String path = "/tiles/" + scene + "/tile_0" + String.valueOf(i) + ".png";
+                final BufferedImage sprite = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path)));
+                tile[i] = new Tile();
+                tile[i].sprite = sprite;
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("[ERROR] couldn't get tile images");
         }
     }
 

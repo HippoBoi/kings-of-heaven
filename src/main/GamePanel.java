@@ -23,6 +23,8 @@ public class GamePanel extends JPanel implements Runnable {
     public final int worldWidth = tileSize * maxWorldX;
     public final int worldHeight = tileSize * maxWorldY;
 
+    public GameScene gameScene = new GameScene();
+
     final double maxFPS = 60;
 
     KeyHandler keyHandler = new KeyHandler();
