@@ -13,8 +13,8 @@ import java.util.Objects;
 
 public class TileManager {
     GamePanel gamePanel;
-    Tile[] tile;
-    int mapTileNumber[][];
+    public Tile[] tile;
+    public int mapTileNumber[][];
 
     public TileManager(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -25,25 +25,38 @@ public class TileManager {
         loadMap();
     }
 
+    public int getTileLayer(String tileName) {
+        switch (tileName) {
+            case "/tiles/outside/tile_02.png":
+                return 1;
+            case "/tiles/outside/tile_03.png":
+                return 1;
+        }
+        return 0;
+    }
+
+    public boolean isTileSolid(String tileName) {
+        switch (tileName) {
+            case "/tiles/outside/tile_04.png":
+                return true;
+        }
+        return false;
+    }
+
     public void getTileImage() {
         try {
-            final int totalTiles = 4;
-
             String scene = gamePanel.gameScene.getSceneName();
+
+            final int totalTiles = 7;
+
             for (int i = 0; i < totalTiles; i++) {
                 final String path = "/tiles/" + scene + "/tile_0" + String.valueOf(i) + ".png";
                 final BufferedImage sprite = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path)));
                 tile[i] = new Tile();
                 tile[i].sprite = sprite;
                 tile[i].name = path;
-                tile[i].layer = 0;
-
-                if (Objects.equals(tile[i].name, "/tiles/outside/tile_02.png")) {
-                    tile[i].layer = 1;
-                }
-                if (Objects.equals(tile[i].name, "/tiles/outside/tile_03.png")) {
-                    tile[i].layer = 1;
-                }
+                tile[i].layer = getTileLayer(tile[i].name);
+                tile[i].isSolid = isTileSolid(tile[i].name);
             }
         } catch (IOException e) {
             System.out.println("[ERROR] couldn't get tile images");
@@ -61,11 +74,21 @@ public class TileManager {
             while (columns < gamePanel.maxWorldX && rows < gamePanel.maxWorldY) {
                 String line = bufferedReader.readLine();
 
+                if (line == null) {
+                    break;
+                }
+
                 while (columns < gamePanel.maxWorldX) {
                     String numbers[] = line.split(" ");
-                    int num = Integer.parseInt(numbers[columns]);
 
-                    mapTileNumber[columns][rows] = num;
+                    if (columns >= numbers.length) {
+                        mapTileNumber[columns][rows] = 0;
+                    }
+                    else {
+                        int num = Integer.parseInt(numbers[columns]);
+                        mapTileNumber[columns][rows] = num;
+                    }
+
                     columns += 1;
                 }
                 if (columns == gamePanel.maxWorldX) {
@@ -85,6 +108,11 @@ public class TileManager {
         int worldRows = 0;
 
         while (worldColumns < gamePanel.maxWorldX && worldRows < gamePanel.maxWorldY) {
+            if (worldColumns > mapTileNumber.length || worldRows > mapTileNumber[worldColumns].length) {
+                worldColumns++;
+                continue;
+            }
+
             int tilePos = mapTileNumber[worldColumns][worldRows];
 
             int x = worldColumns * gamePanel.tileSize;
@@ -95,12 +123,16 @@ public class TileManager {
             Tile curTile = tile[tilePos];
             Tile defaultTile = tile[0];
 
-            if (curTile.layer == layer) {
-                graphics2D.drawImage(curTile.sprite, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
-            }
+            if (x + gamePanel.tileSize > gamePanel.player.x - gamePanel.player.screenX && x - gamePanel.tileSize < gamePanel.player.x + gamePanel.player.screenX
+                && (y + gamePanel.tileSize > gamePanel.player.y - gamePanel.player.screenY && y - gamePanel.tileSize < gamePanel.player.y + gamePanel.player.screenY)) {
 
-            if (curTile.layer != layer && curTile.layer == 1) {
-                graphics2D.drawImage(defaultTile.sprite, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+                if (curTile.layer == layer) {
+                    graphics2D.drawImage(curTile.sprite, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+                }
+
+                if (curTile.layer != layer && curTile.layer == 1) {
+                    graphics2D.drawImage(defaultTile.sprite, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+                }
             }
 
             worldColumns += 1;

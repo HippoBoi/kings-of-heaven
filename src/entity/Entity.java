@@ -2,6 +2,7 @@ package entity;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 public class Entity {
     public int x, y;
@@ -17,8 +18,9 @@ public class Entity {
 
     public Boolean isMoving;
 
-    public String direction;
+    public List<String> directions;
+
 
     public Rectangle hitbox;
-    public boolean colliding = false;
+    public boolean isColliding = false;
 }

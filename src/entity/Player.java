@@ -7,6 +7,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Player extends Entity {
@@ -25,9 +27,11 @@ public class Player extends Entity {
         screenX = gamePanel.screenWidth / 2 - (gamePanel.tileSize / 2);
         screenY = gamePanel.screenHeight / 2 - (gamePanel.tileSize / 2);
 
-        final int hitboxWidth = gamePanel.tileSize - 4;
-        final int hitboxHeight = gamePanel.tileSize - 4;
-        hitbox = new Rectangle(0, 0, hitboxWidth, hitboxHeight);
+        final int hitboxX = gamePanel.tileSize - 32;
+        final int hitboxY = gamePanel.tileSize + 16;
+        final int hitboxWidth = gamePanel.tileSize - 32 - 4;
+        final int hitboxHeight = gamePanel.tileSize - 16 - 4;
+        hitbox = new Rectangle(hitboxX, hitboxY, hitboxWidth, hitboxHeight);
 
         setDefaultValues();
         getPlayerSprites();
@@ -39,7 +43,7 @@ public class Player extends Entity {
         xScale = 1;
         yScale = 2;
         speed = 4;
-        direction = "down";
+        directions = new ArrayList<String>(List.of("down"));
     }
 
     public void getPlayerSprites() {
@@ -70,21 +74,38 @@ public class Player extends Entity {
         int directionX = 0;
         int directionY = 0;
 
+        String lastDirection = directions.getLast();
+        directions.clear();
+        directions.add(lastDirection);
+
         if (keyHandler.upPressed) {
-            direction = "up";
-            directionY -= 1;
+            directionY -= speed;
+            directions.add("up");
         }
         if (keyHandler.downPressed) {
-            direction = "down";
-            directionY += 1;
+            directionY += speed;
+            directions.add("down");
         }
         if (keyHandler.leftPressed) {
-            direction = "left";
-            directionX -= 1;
+            directionX -= speed;
+            directions.add("left");
         }
         if (keyHandler.rightPressed) {
-            direction = "right";
-            directionX += 1;
+            directionX += speed;
+            directions.add("right");
+        }
+
+        isColliding = false;
+        gamePanel.collisionChecker.checkTile(this);
+
+        if (isColliding) {
+            if (directions.contains("up") || directions.contains("down")) {
+                directionY = 0;
+            }
+
+            if (directions.contains("left") || directions.contains("right")) {
+                directionX = 0;
+            }
         }
 
         double length = Math.sqrt((directionX * directionX) + (directionY * directionY));
@@ -120,49 +141,53 @@ public class Player extends Entity {
         int spriteWidth = gamePanel.tileSize * xScale;
         int spriteHeight = gamePanel.tileSize * yScale;
 
-        switch (direction) {
-            case "up":
-                if (spriteNumber == 0 || spriteNumber == 2) {
-                    curSprite = up1;
-                } else if (spriteNumber == 1) {
-                    curSprite = up2;
-                } else if (spriteNumber == 3) {
-                    curSprite = up3;
-                }
-
-                break;
-            case "down":
-                if (spriteNumber == 0 || spriteNumber == 2) {
-                    curSprite = down1;
-                } else if (spriteNumber == 1) {
-                    curSprite = down2;
-                } else if (spriteNumber == 3) {
-                    curSprite = down3;
-                }
-
-                break;
-            case "left":
-                if (spriteNumber == 0 || spriteNumber == 2) {
-                    curSprite = left1;
-                } else if (spriteNumber == 1) {
-                    curSprite = left2;
-                } else if (spriteNumber == 3) {
-                    curSprite = left3;
-                }
-
-                break;
-            case "right":
-                if (spriteNumber == 0 || spriteNumber == 2) {
-                    curSprite = right1;
-                } else if (spriteNumber == 1) {
-                    curSprite = right2;
-                } else if (spriteNumber == 3) {
-                    curSprite = right3;
-                }
-
-                break;
+        if (directions.contains("up")) {
+            if (spriteNumber == 0 || spriteNumber == 2) {
+                curSprite = up1;
+            } else if (spriteNumber == 1) {
+                curSprite = up2;
+            } else if (spriteNumber == 3) {
+                curSprite = up3;
+            }
+        }
+        if (directions.contains("down")) {
+            if (spriteNumber == 0 || spriteNumber == 2) {
+                curSprite = down1;
+            } else if (spriteNumber == 1) {
+                curSprite = down2;
+            } else if (spriteNumber == 3) {
+                curSprite = down3;
+            }
+        }
+        if (directions.contains("left")) {
+            if (spriteNumber == 0 || spriteNumber == 2) {
+                curSprite = left1;
+            } else if (spriteNumber == 1) {
+                curSprite = left2;
+            } else if (spriteNumber == 3) {
+                curSprite = left3;
+            }
+        }
+        if (directions.contains("right")) {
+            if (spriteNumber == 0 || spriteNumber == 2) {
+                curSprite = right1;
+            } else if (spriteNumber == 1) {
+                curSprite = right2;
+            } else if (spriteNumber == 3) {
+                curSprite = right3;
+            }
         }
 
         graphics2D.drawImage(curSprite, screenX, screenY, spriteWidth, spriteHeight, null);
+
+        if (gamePanel.DEBUG) {
+            graphics2D.setColor(new Color(255, 0, 0, 100));
+            graphics2D.fillRect(
+                    screenX + hitbox.x,
+                    screenY + hitbox.y,
+                    hitbox.width,
+                    hitbox.height
+            );
+        }
     }
 }
