@@ -29,6 +29,11 @@ public class CollisionChecker {
 
         TileManager tileManager = gamePanel.tileManager;
 
+        entity.collidingUp = false;
+        entity.collidingDown = false;
+        entity.collidingLeft = false;
+        entity.collidingRight = false;
+
         if (entity.directions.contains("up")) {
             entityTopRow = (entityTop - entity.speed) / gamePanel.tileSize;
             nearestTilePos1 = tileManager.mapTileNumber[entityLeftCol][entityTopRow];
@@ -38,43 +43,7 @@ public class CollisionChecker {
             nearestTile2 = tileManager.tile[nearestTilePos2];
 
             if (nearestTile1.isSolid || nearestTile2.isSolid) {
-                entity.isColliding = true;
-            }
-        }
-        if (entity.directions.contains("left")) {
-            entityLeftCol = (entityLeft - entity.speed) / gamePanel.tileSize;
-            nearestTilePos1 = tileManager.mapTileNumber[entityLeftCol][entityTopRow];
-            nearestTilePos2 = tileManager.mapTileNumber[entityLeftCol][entityBotRow];
-
-            nearestTile1 = tileManager.tile[nearestTilePos1];
-            nearestTile2 = tileManager.tile[nearestTilePos2];
-
-            if (nearestTile1.isSolid || nearestTile2.isSolid) {
-                entity.isColliding = true;
-            }
-        }
-        if (entity.directions.contains("right")) {
-            entityRightCol = (entityRight + entity.speed) / gamePanel.tileSize;
-            nearestTilePos1 = tileManager.mapTileNumber[entityRightCol][entityTopRow];
-            nearestTilePos2 = tileManager.mapTileNumber[entityRightCol][entityBotRow];
-
-            nearestTile1 = tileManager.tile[nearestTilePos1];
-            nearestTile2 = tileManager.tile[nearestTilePos2];
-
-            if (nearestTile1.isSolid || nearestTile2.isSolid) {
-                entity.isColliding = true;
-            }
-        }
-        if (entity.directions.contains("up")) {
-            entityTopRow = (entityTop - entity.speed) / gamePanel.tileSize;
-            nearestTilePos1 = tileManager.mapTileNumber[entityLeftCol][entityTopRow];
-            nearestTilePos2 = tileManager.mapTileNumber[entityRightCol][entityTopRow];
-
-            nearestTile1 = tileManager.tile[nearestTilePos1];
-            nearestTile2 = tileManager.tile[nearestTilePos2];
-
-            if (nearestTile1.isSolid || nearestTile2.isSolid) {
-                entity.isColliding = true;
+                entity.collidingUp = true;
             }
         }
         if (entity.directions.contains("down")) {
@@ -86,8 +55,34 @@ public class CollisionChecker {
             nearestTile2 = tileManager.tile[nearestTilePos2];
 
             if (nearestTile1.isSolid || nearestTile2.isSolid) {
-                entity.isColliding = true;
+                entity.collidingDown = true;
             }
         }
+        if (entity.directions.contains("left")) {
+            entityLeftCol = (entityLeft - entity.speed) / gamePanel.tileSize;
+            nearestTilePos1 = tileManager.mapTileNumber[entityLeftCol][entityTopRow];
+            nearestTilePos2 = tileManager.mapTileNumber[entityLeftCol][entityBotRow];
+
+            nearestTile1 = tileManager.tile[nearestTilePos1];
+            nearestTile2 = tileManager.tile[nearestTilePos2];
+
+            if (nearestTile1.isSolid || nearestTile2.isSolid) {
+                entity.collidingLeft = true;
+            }
+        }
+        if (entity.directions.contains("right")) {
+            entityRightCol = (entityRight + entity.speed) / gamePanel.tileSize;
+            nearestTilePos1 = tileManager.mapTileNumber[entityRightCol][entityTopRow];
+            nearestTilePos2 = tileManager.mapTileNumber[entityRightCol][entityBotRow];
+
+            nearestTile1 = tileManager.tile[nearestTilePos1];
+            nearestTile2 = tileManager.tile[nearestTilePos2];
+
+            if (nearestTile1.isSolid || nearestTile2.isSolid) {
+                entity.collidingRight = true;
+            }
+        }
+
+        entity.isColliding = entity.collidingUp || entity.collidingDown || entity.collidingLeft || entity.collidingRight;
     }
 }

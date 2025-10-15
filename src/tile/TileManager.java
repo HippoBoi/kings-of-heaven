@@ -96,7 +96,7 @@ public class TileManager {
                     rows += 1;
                 }
             }
-            // bufferedReader.close();
+            bufferedReader.close();
 
         } catch (Exception e) {
             e.printStackTrace();

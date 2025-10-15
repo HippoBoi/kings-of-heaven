@@ -23,4 +23,8 @@ public class Entity {
 
     public Rectangle hitbox;
     public boolean isColliding = false;
+    public boolean collidingUp = false;
+    public boolean collidingDown = false;
+    public boolean collidingLeft = false;
+    public boolean collidingRight = false;
 }

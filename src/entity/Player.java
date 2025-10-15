@@ -98,14 +98,17 @@ public class Player extends Entity {
         isColliding = false;
         gamePanel.collisionChecker.checkTile(this);
 
-        if (isColliding) {
-            if (directions.contains("up") || directions.contains("down")) {
-                directionY = 0;
-            }
+        if ((directionX < 0 && collidingLeft) || (directionX > 0 && collidingRight)) {
+            int storedDirection = directionX;
+            directionX = 0;
 
-            if (directions.contains("left") || directions.contains("right")) {
-                directionX = 0;
+            if (collidingUp || collidingDown) {
+                directionX = storedDirection;
             }
+        }
+
+        if ((directionY < 0 && collidingUp) || (directionY > 0 && collidingDown)) {
+            directionY = 0;
         }
 
         double length = Math.sqrt((directionX * directionX) + (directionY * directionY));
