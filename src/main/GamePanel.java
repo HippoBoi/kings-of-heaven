@@ -6,6 +6,9 @@ import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class GamePanel extends JPanel implements Runnable {
     final int baseTileSize = 16;
@@ -78,11 +81,21 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(graphics);
 
         Graphics2D graphics2D = (Graphics2D)graphics;
-        tileManager.draw(graphics2D, 0);
 
-        player.draw(graphics2D);
+        List<Drawable> backgroundTiles = tileManager.getBackgroundTiles();
+        for (Drawable backgroundTile : backgroundTiles) {
+            backgroundTile.draw(graphics2D);
+        }
 
-        tileManager.draw(graphics2D, 1);
+        List<Drawable> drawables = new ArrayList<>();
+        drawables.addAll(tileManager.getDepthSortedTiles());
+        drawables.add(player);
+        drawables.sort(Comparator.comparingInt(Drawable::getDrawY));
+
+        for (Drawable drawable : drawables) {
+            drawable.draw(graphics2D);
+        }
+        
         graphics2D.dispose();
     }
 }

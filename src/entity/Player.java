@@ -193,4 +193,9 @@ public class Player extends Entity {
             );
         }
     }
+
+    @Override
+    public int getDrawY() {
+        return y + gamePanel.tileSize;
+    }
 }

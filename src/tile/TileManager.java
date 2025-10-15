@@ -1,6 +1,8 @@
 package tile;
 
+import main.Drawable;
 import main.GamePanel;
+import main.GameScene;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -9,15 +11,20 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class TileManager {
     GamePanel gamePanel;
+    String scene;
     public Tile[] tile;
     public int mapTileNumber[][];
 
     public TileManager(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
+        this.scene = gamePanel.gameScene.getSceneName();
+
         tile = new Tile[10];
         mapTileNumber = new int[gamePanel.maxWorldX][gamePanel.maxWorldY];
 
@@ -26,27 +33,42 @@ public class TileManager {
     }
 
     public int getTileLayer(String tileName) {
-        switch (tileName) {
-            case "/tiles/outside/tile_02.png":
-                return 1;
-            case "/tiles/outside/tile_03.png":
-                return 1;
+        switch (scene) {
+            default:
+                switch (tileName) {
+                    case "/tiles/outside/tile_00.png":
+                        return -1;
+                    case "/tiles/outside/tile_01.png":
+                        return -1;
+                    case "/tiles/outside/tile_02.png":
+                        return 0;
+                    case "/tiles/outside/tile_03.png":
+                        return 0;
+                    case "/tiles/outside/tile_04.png":
+                        return -1;
+                    case "/tiles/outside/tile_05.png":
+                        return -1;
+                    case "/tiles/outside/tile_06.png":
+                        return -1;
+                }
         }
-        return 0;
+        return 0; // Default to depth-sorted layer
     }
 
     public boolean isTileSolid(String tileName) {
-        switch (tileName) {
-            case "/tiles/outside/tile_04.png":
-                return true;
+        switch (scene) {
+            default:
+                switch (tileName) {
+                    case "/tiles/outside/tile_04.png":
+                        return true;
+                }
+                break;
         }
         return false;
     }
 
     public void getTileImage() {
         try {
-            String scene = gamePanel.gameScene.getSceneName();
-
             final int totalTiles = 7;
 
             for (int i = 0; i < totalTiles; i++) {
@@ -142,5 +164,116 @@ public class TileManager {
                 worldRows += 1;
             }
         }
+    }
+
+    public List<Drawable> getDrawableTiles() {
+        List<Drawable> drawables = new ArrayList<>();
+        
+        int worldColumns = 0;
+        int worldRows = 0;
+
+        while (worldColumns < gamePanel.maxWorldX && worldRows < gamePanel.maxWorldY) {
+            if (worldColumns >= mapTileNumber.length || worldRows >= mapTileNumber[worldColumns].length) {
+                worldColumns++;
+                continue;
+            }
+
+            int tilePos = mapTileNumber[worldColumns][worldRows];
+
+            int x = worldColumns * gamePanel.tileSize;
+            int y = worldRows * gamePanel.tileSize;
+
+            // Check if tile is visible on screen
+            if (isTileVisible(x, y)) {
+                Tile curTile = tile[tilePos];
+                drawables.add(new DrawableTile(curTile, x, y, gamePanel));
+            }
+
+            worldColumns += 1;
+
+            if (worldColumns == gamePanel.maxWorldX) {
+                worldColumns = 0;
+                worldRows += 1;
+            }
+        }
+        
+        return drawables;
+    }
+
+    public List<Drawable> getBackgroundTiles() {
+        List<Drawable> backgroundTiles = new ArrayList<>();
+        
+        int worldColumns = 0;
+        int worldRows = 0;
+
+        while (worldColumns < gamePanel.maxWorldX && worldRows < gamePanel.maxWorldY) {
+            if (worldColumns >= mapTileNumber.length || worldRows >= mapTileNumber[worldColumns].length) {
+                worldColumns++;
+                continue;
+            }
+
+            int tilePos = mapTileNumber[worldColumns][worldRows];
+
+            int x = worldColumns * gamePanel.tileSize;
+            int y = worldRows * gamePanel.tileSize;
+
+            if (isTileVisible(x, y)) {
+                Tile curTile = tile[tilePos];
+                if (curTile.layer == -1) {
+                    backgroundTiles.add(new DrawableTile(curTile, x, y, gamePanel));
+                }
+            }
+
+            worldColumns += 1;
+
+            if (worldColumns == gamePanel.maxWorldX) {
+                worldColumns = 0;
+                worldRows += 1;
+            }
+        }
+        
+        return backgroundTiles;
+    }
+
+    public List<Drawable> getDepthSortedTiles() {
+        List<Drawable> depthTiles = new ArrayList<>();
+        
+        int worldColumns = 0;
+        int worldRows = 0;
+
+        while (worldColumns < gamePanel.maxWorldX && worldRows < gamePanel.maxWorldY) {
+            if (worldColumns >= mapTileNumber.length || worldRows >= mapTileNumber[worldColumns].length) {
+                worldColumns++;
+                continue;
+            }
+
+            int tilePos = mapTileNumber[worldColumns][worldRows];
+
+            int x = worldColumns * gamePanel.tileSize;
+            int y = worldRows * gamePanel.tileSize;
+
+            if (isTileVisible(x, y)) {
+                Tile curTile = tile[tilePos];
+                if (curTile.layer >= 0) {
+                    depthTiles.add(new DrawableTile(curTile, x, y, gamePanel));
+                }
+            }
+
+            worldColumns += 1;
+
+            if (worldColumns == gamePanel.maxWorldX) {
+                worldColumns = 0;
+                worldRows += 1;
+            }
+        }
+        
+        return depthTiles;
+    }
+
+    private boolean isTileVisible(int x, int y) {
+        return x + gamePanel.tileSize > gamePanel.player.x - gamePanel.player.screenX && 
+               x - gamePanel.tileSize < gamePanel.player.x + gamePanel.player.screenX &&
+               y + gamePanel.tileSize > gamePanel.player.y - gamePanel.player.screenY && 
+               y - gamePanel.tileSize < gamePanel.player.y + gamePanel.player.screenY;
     }
 }

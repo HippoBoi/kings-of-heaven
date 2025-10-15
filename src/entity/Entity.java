@@ -1,10 +1,12 @@
 package entity;
 
+import main.Drawable;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-public class Entity {
+public class Entity implements Drawable {
     public int x, y;
     public int xScale, yScale;
     public int speed;
@@ -27,4 +29,12 @@ public class Entity {
     public boolean collidingDown = false;
     public boolean collidingLeft = false;
     public boolean collidingRight = false;
+
+    @Override
+    public int getDrawY() {
+        return y;
+    }
+
+    @Override
+    public void draw(Graphics2D g2) {}
 }
