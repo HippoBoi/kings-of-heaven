@@ -1,5 +1,6 @@
 package main;
 
+import entity.Camera;
 import entity.GameCharacter;
 import entity.Player;
 import tile.TileManager;
@@ -23,18 +24,17 @@ public class GamePanel extends JPanel implements Runnable {
 
     public final int maxWorldX = 60;
     public final int maxWorldY = 60;
-    public final int worldWidth = tileSize * maxWorldX;
-    public final int worldHeight = tileSize * maxWorldY;
 
     final double maxFPS = 60;
 
-    public final boolean DEBUG = true;
+    public final boolean DEBUG = false;
 
     KeyHandler keyHandler = new KeyHandler();
     Thread gameThread;
     GameCharacter defaultCharacter = new GameCharacter("Rhay");
 
     public Player player = new Player(this, keyHandler, defaultCharacter);
+    public Camera camera = new Camera(this);
     public GameScene gameScene = new GameScene();
     public CollisionChecker collisionChecker = new CollisionChecker(this);
     public TileManager tileManager = new TileManager(this);
@@ -75,6 +75,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
         player.update();
+        camera.setPosition(player.x, player.y);
     }
 
     public void paintComponent(Graphics graphics) {
@@ -87,8 +88,7 @@ public class GamePanel extends JPanel implements Runnable {
             backgroundTile.draw(graphics2D);
         }
 
-        List<Drawable> drawables = new ArrayList<>();
-        drawables.addAll(tileManager.getDepthSortedTiles());
+        List<Drawable> drawables = new ArrayList<>(tileManager.getDepthSortedTiles());
         drawables.add(player);
         drawables.sort(Comparator.comparingInt(Drawable::getDrawY));
 

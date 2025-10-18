@@ -43,7 +43,7 @@ public class Player extends Entity {
         xScale = 1;
         yScale = 2;
         speed = 4;
-        directions = new ArrayList<String>(List.of("down"));
+        directions = new ArrayList<>(List.of("down"));
     }
 
     public void getPlayerSprites() {
@@ -181,13 +181,16 @@ public class Player extends Entity {
             }
         }
 
-        graphics2D.drawImage(curSprite, screenX, screenY, spriteWidth, spriteHeight, null);
+        int playerScreenX = x - gamePanel.camera.x + gamePanel.camera.screenX;
+        int playerScreenY = y - gamePanel.camera.y + gamePanel.camera.screenY;
+
+        graphics2D.drawImage(curSprite, playerScreenX, playerScreenY, spriteWidth, spriteHeight, null);
 
         if (gamePanel.DEBUG) {
             graphics2D.setColor(new Color(255, 0, 0, 100));
             graphics2D.fillRect(
-                    screenX + hitbox.x,
-                    screenY + hitbox.y,
+                    playerScreenX + hitbox.x,
+                    playerScreenY + hitbox.y,
                     hitbox.width,
                     hitbox.height
             );

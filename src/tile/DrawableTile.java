@@ -19,8 +19,8 @@ public class DrawableTile implements Drawable {
 
     @Override
     public void draw(Graphics2D g2) {
-        int screenX = worldX - gamePanel.player.x + gamePanel.player.screenX;
-        int screenY = worldY - gamePanel.player.y + gamePanel.player.screenY;
+        int screenX = worldX - gamePanel.camera.x + gamePanel.camera.screenX;
+        int screenY = worldY - gamePanel.camera.y + gamePanel.camera.screenY;
         g2.drawImage(tile.sprite, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
     }
 
@@ -29,16 +29,6 @@ public class DrawableTile implements Drawable {
         if (tile.layer == -1) {
             return Integer.MAX_VALUE;
         }
-        return worldY;
-    }
-
-    public int getLayer() {
-        return tile.layer;
-    }
-    public int getWorldX() {
-        return worldX;
-    }
-    public int getWorldY() {
         return worldY;
     }
 }

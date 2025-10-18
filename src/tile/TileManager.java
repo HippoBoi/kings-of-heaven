@@ -1,8 +1,8 @@
 package tile;
 
+import entity.Camera;
 import main.Drawable;
 import main.GamePanel;
-import main.GameScene;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,7 +19,7 @@ public class TileManager {
     GamePanel gamePanel;
     String scene;
     public Tile[] tile;
-    public int mapTileNumber[][];
+    public int[][] mapTileNumber;
 
     public TileManager(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -41,9 +41,9 @@ public class TileManager {
                     case "/tiles/outside/tile_01.png":
                         return -1;
                     case "/tiles/outside/tile_02.png":
-                        return 0;
+                        return 1;
                     case "/tiles/outside/tile_03.png":
-                        return 0;
+                        return 1;
                     case "/tiles/outside/tile_04.png":
                         return -1;
                     case "/tiles/outside/tile_05.png":
@@ -72,7 +72,7 @@ public class TileManager {
             final int totalTiles = 7;
 
             for (int i = 0; i < totalTiles; i++) {
-                final String path = "/tiles/" + scene + "/tile_0" + String.valueOf(i) + ".png";
+                final String path = "/tiles/" + scene + "/tile_0" + i + ".png";
                 final BufferedImage sprite = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path)));
                 tile[i] = new Tile();
                 tile[i].sprite = sprite;
@@ -88,6 +88,11 @@ public class TileManager {
     public void loadMap() {
         try {
             InputStream inputStream = getClass().getResourceAsStream("/maps/map_01.txt");
+            if (inputStream == null) {
+                System.out.println("[TileManager ERROR]: couldn't find map txt file");
+                return;
+            }
+
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
             int columns = 0;
@@ -101,7 +106,7 @@ public class TileManager {
                 }
 
                 while (columns < gamePanel.maxWorldX) {
-                    String numbers[] = line.split(" ");
+                    String[] numbers = line.split(" ");
 
                     if (columns >= numbers.length) {
                         mapTileNumber[columns][rows] = 0;
@@ -137,6 +142,7 @@ public class TileManager {
 
             int tilePos = mapTileNumber[worldColumns][worldRows];
 
+            Camera camera = gamePanel.camera;
             int x = worldColumns * gamePanel.tileSize;
             int y = worldRows * gamePanel.tileSize;
             int screenX = x - gamePanel.player.x + gamePanel.player.screenX;
@@ -219,8 +225,13 @@ public class TileManager {
 
             if (isTileVisible(x, y)) {
                 Tile curTile = tile[tilePos];
+                Tile defaultTile = tile[0];
                 if (curTile.layer == -1) {
                     backgroundTiles.add(new DrawableTile(curTile, x, y, gamePanel));
+                }
+
+                if (curTile.layer > 0) {
+                    backgroundTiles.add(new DrawableTile(defaultTile, x, y, gamePanel));
                 }
             }
 
@@ -271,9 +282,10 @@ public class TileManager {
     }
 
     private boolean isTileVisible(int x, int y) {
-        return x + gamePanel.tileSize > gamePanel.player.x - gamePanel.player.screenX && 
-               x - gamePanel.tileSize < gamePanel.player.x + gamePanel.player.screenX &&
-               y + gamePanel.tileSize > gamePanel.player.y - gamePanel.player.screenY && 
-               y - gamePanel.tileSize < gamePanel.player.y + gamePanel.player.screenY;
+        Camera camera = gamePanel.camera;
+        return x + gamePanel.tileSize > camera.x - camera.screenX && 
+               x - gamePanel.tileSize < camera.x + camera.screenX &&
+               y + gamePanel.tileSize > camera.y - camera.screenY && 
+               y - gamePanel.tileSize < camera.y + camera.screenY;
     }
 }
