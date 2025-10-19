@@ -3,38 +3,36 @@ package entity;
 import main.GamePanel;
 import main.KeyHandler;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class Player extends Entity {
+public class PlayerCharacter extends Entity {
     GamePanel gamePanel;
     KeyHandler keyHandler;
-    GameCharacter gameCharacter;
+    Character character;
 
     public final int screenX;
     public final int screenY;
+    public ArrayList<int[]> storedPosition = new ArrayList<>();
 
-    public Player(GamePanel gamePanel, KeyHandler keyHandler, GameCharacter gameCharacter) {
+    public PlayerCharacter(GamePanel gamePanel, KeyHandler keyHandler, Character character) {
         this.gamePanel = gamePanel;
         this.keyHandler = keyHandler;
-        this.gameCharacter = gameCharacter;
+        this.character = character;
 
         screenX = gamePanel.screenWidth / 2 - (gamePanel.tileSize / 2);
         screenY = gamePanel.screenHeight / 2 - (gamePanel.tileSize / 2);
 
         final int hitboxX = gamePanel.tileSize - 32;
-        final int hitboxY = gamePanel.tileSize + 16;
+        final int hitboxY = gamePanel.tileSize + 24;
         final int hitboxWidth = gamePanel.tileSize - 32 - 4;
-        final int hitboxHeight = gamePanel.tileSize - 16 - 4;
+        final int hitboxHeight = gamePanel.tileSize - 32;
         hitbox = new Rectangle(hitboxX, hitboxY, hitboxWidth, hitboxHeight);
 
         setDefaultValues();
-        getPlayerSprites();
+        getCharacterSprites(character);
     }
 
     public void setDefaultValues() {
@@ -44,30 +42,6 @@ public class Player extends Entity {
         yScale = 2;
         speed = 4;
         directions = new ArrayList<>(List.of("down"));
-    }
-
-    public void getPlayerSprites() {
-        try {
-            String path = "/" + gameCharacter.name + "/" + gameCharacter.name;
-
-            up1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_up.png")));
-            up2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_up_walk_01.png")));
-            up3 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_up_walk_02.png")));
-
-            down1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_down.png")));
-            down2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_down_walk_01.png")));
-            down3 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_down_walk_02.png")));
-
-            left1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_left.png")));
-            left2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_left_walk_01.png")));
-            left3 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_left_walk_02.png")));
-
-            right1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_right.png")));
-            right2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_right_walk_01.png")));
-            right3 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(path + "_right_walk_02.png")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public void update() {
@@ -117,8 +91,16 @@ public class Player extends Entity {
             directionY = (int) Math.round(directionY / length * speed);
         }
 
-        x += directionX;
-        y += directionY;
+        if (directionX != 0 || directionY != 0) {
+            x += directionX;
+            y += directionY;
+
+            storedPosition.addFirst(new int[]{x, y});
+
+            if (storedPosition.size() > 50) {
+                storedPosition.removeLast();
+            }
+        }
 
         isMoving = keyHandler.upPressed || keyHandler.downPressed || keyHandler.leftPressed || keyHandler.rightPressed;
         if (isMoving) {
@@ -187,7 +169,7 @@ public class Player extends Entity {
         graphics2D.drawImage(curSprite, playerScreenX, playerScreenY, spriteWidth, spriteHeight, null);
 
         if (gamePanel.DEBUG) {
-            graphics2D.setColor(new Color(255, 0, 0, 100));
+            graphics2D.setColor(new Color(255, 0, 0, 180));
             graphics2D.fillRect(
                     playerScreenX + hitbox.x,
                     playerScreenY + hitbox.y,

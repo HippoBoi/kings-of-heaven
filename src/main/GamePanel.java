@@ -1,8 +1,9 @@
 package main;
 
 import entity.Camera;
-import entity.GameCharacter;
-import entity.Player;
+import entity.Character;
+import entity.FollowerCharacter;
+import entity.PlayerCharacter;
 import tile.TileManager;
 
 import javax.swing.*;
@@ -27,15 +28,20 @@ public class GamePanel extends JPanel implements Runnable {
 
     final double maxFPS = 60;
 
-    public final boolean DEBUG = false;
+    public final boolean DEBUG = true;
 
     KeyHandler keyHandler = new KeyHandler();
     Thread gameThread;
-    GameCharacter defaultCharacter = new GameCharacter("Rhay");
+    Character defaultCharacter = new Character("Rhay");
 
-    public Player player = new Player(this, keyHandler, defaultCharacter);
+    public PlayerCharacter player = new PlayerCharacter(this, keyHandler, defaultCharacter);
+    FollowerCharacter followerCharacter = new FollowerCharacter(this, defaultCharacter, 1, player);
     public Camera camera = new Camera(this);
     public GameScene gameScene = new GameScene();
+
+    public List<Character> partyMembers = new ArrayList<>(List.of(defaultCharacter));
+    public PartyManager partyManager = new PartyManager(this, partyMembers);
+
     public CollisionChecker collisionChecker = new CollisionChecker(this);
     public TileManager tileManager = new TileManager(this);
 
@@ -75,6 +81,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
         player.update();
+        followerCharacter.update();
         camera.setPosition(player.x, player.y);
     }
 
@@ -90,6 +97,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         List<Drawable> drawables = new ArrayList<>(tileManager.getDepthSortedTiles());
         drawables.add(player);
+        drawables.add(followerCharacter);
         drawables.sort(Comparator.comparingInt(Drawable::getDrawY));
 
         for (Drawable drawable : drawables) {

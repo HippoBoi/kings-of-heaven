@@ -1,9 +1,9 @@
 package entity;
 
-public class GameCharacter {
+public class Character {
     String name;
 
-    public GameCharacter(String name) {
+    public Character(String name) {
         this.name = name.toLowerCase();
     }
 }
