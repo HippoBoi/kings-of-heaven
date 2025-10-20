@@ -32,6 +32,14 @@ public class FollowerCharacter extends Entity {
     }
 
     public void update() {
+        if (myPosition < playerToFollow.storedPosition.size() && playerToFollow.storedPosition.get(myPosition) != null) {
+            int playerPosX = playerToFollow.storedPosition.get(myPosition)[0];
+            int playerPosY = playerToFollow.storedPosition.get(myPosition)[1];
+
+            x = playerPosX;
+            y = playerPosY;
+        }
+
         isMoving = true;
         if (isMoving) {
             spriteCounter++;
@@ -49,8 +57,6 @@ public class FollowerCharacter extends Entity {
             spriteCounter = 9;
             spriteNumber = 0;
         }
-
-        System.out.println(x + " " + y);
     }
 
     public void draw(Graphics2D graphics2D) {

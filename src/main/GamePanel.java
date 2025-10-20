@@ -28,14 +28,15 @@ public class GamePanel extends JPanel implements Runnable {
 
     final double maxFPS = 60;
 
-    public final boolean DEBUG = true;
+    public final boolean DEBUG = false;
 
     KeyHandler keyHandler = new KeyHandler();
     Thread gameThread;
     Character defaultCharacter = new Character("Rhay");
+    Character DEBUGFollowCharacter = new Character("Clean");
 
     public PlayerCharacter player = new PlayerCharacter(this, keyHandler, defaultCharacter);
-    FollowerCharacter followerCharacter = new FollowerCharacter(this, defaultCharacter, 1, player);
+    FollowerCharacter followerCharacter = new FollowerCharacter(this, DEBUGFollowCharacter, 20, player);
     public Camera camera = new Camera(this);
     public GameScene gameScene = new GameScene();
 
