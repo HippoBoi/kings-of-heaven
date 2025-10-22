@@ -4,6 +4,8 @@ import main.GamePanel;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FollowerCharacter extends Entity {
     Character character;
@@ -28,43 +30,72 @@ public class FollowerCharacter extends Entity {
         xScale = 1;
         yScale = 2;
 
+        directions = new ArrayList<>(List.of("down"));
+
         getCharacterSprites(character);
     }
 
     public void update() {
         if (myPosition < playerToFollow.storedPosition.size() && playerToFollow.storedPosition.get(myPosition) != null) {
-            int playerPosX = playerToFollow.storedPosition.get(myPosition)[0];
-            int playerPosY = playerToFollow.storedPosition.get(myPosition)[1];
-
-            x = playerPosX;
-            y = playerPosY;
+            Position pos = playerToFollow.storedPosition.get(myPosition);
+            x = pos.x;
+            y = pos.y;
         }
 
-        isMoving = true;
-        if (isMoving) {
-            spriteCounter++;
-            if (spriteCounter > 10) {
-                spriteNumber += 1;
-
-                if (spriteNumber > 3) {
-                    spriteNumber = 0;
-                }
-
-                spriteCounter = 0;
-            }
-        }
-        else {
-            spriteCounter = 9;
-            spriteNumber = 0;
-        }
+        spriteNumber = playerToFollow.spriteNumber;
+        spriteCounter = playerToFollow.spriteCounter;
     }
 
     public void draw(Graphics2D graphics2D) {
-        BufferedImage curSprite;
+        BufferedImage curSprite = down1;
         int spriteWidth = gamePanel.tileSize * xScale;
         int spriteHeight = gamePanel.tileSize * yScale;
 
-        curSprite = down1;
+        String playerDirection;
+        if (myPosition < playerToFollow.storedPosition.size() && playerToFollow.storedPosition.get(myPosition) != null) {
+            Position pos = playerToFollow.storedPosition.get(myPosition);
+            playerDirection = pos.direction;
+
+            directions.clear();
+            directions.add(playerDirection);
+        }
+
+        if (directions.contains("up")) {
+            if (spriteNumber == 0 || spriteNumber == 2) {
+                curSprite = up1;
+            } else if (spriteNumber == 1) {
+                curSprite = up2;
+            } else if (spriteNumber == 3) {
+                curSprite = up3;
+            }
+        }
+        if (directions.contains("down")) {
+            if (spriteNumber == 0 || spriteNumber == 2) {
+                curSprite = down1;
+            } else if (spriteNumber == 1) {
+                curSprite = down2;
+            } else if (spriteNumber == 3) {
+                curSprite = down3;
+            }
+        }
+        if (directions.contains("left")) {
+            if (spriteNumber == 0 || spriteNumber == 2) {
+                curSprite = left1;
+            } else if (spriteNumber == 1) {
+                curSprite = left2;
+            } else if (spriteNumber == 3) {
+                curSprite = left3;
+            }
+        }
+        if (directions.contains("right")) {
+            if (spriteNumber == 0 || spriteNumber == 2) {
+                curSprite = right1;
+            } else if (spriteNumber == 1) {
+                curSprite = right2;
+            } else if (spriteNumber == 3) {
+                curSprite = right3;
+            }
+        }
 
         int playerScreenX = x - gamePanel.camera.x + gamePanel.camera.screenX;
         int playerScreenY = y - gamePanel.camera.y + gamePanel.camera.screenY;

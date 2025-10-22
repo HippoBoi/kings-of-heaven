@@ -30,18 +30,14 @@ public class GamePanel extends JPanel implements Runnable {
 
     public final boolean DEBUG = false;
 
+    public PartyManager partyManager = new PartyManager(this);
+
     KeyHandler keyHandler = new KeyHandler();
     Thread gameThread;
-    Character defaultCharacter = new Character("Rhay");
-    Character DEBUGFollowCharacter = new Character("Clean");
 
-    public PlayerCharacter player = new PlayerCharacter(this, keyHandler, defaultCharacter);
-    FollowerCharacter followerCharacter = new FollowerCharacter(this, DEBUGFollowCharacter, 20, player);
+    public PlayerCharacter player = new PlayerCharacter(this, keyHandler, partyManager.partyMembers.getFirst());
     public Camera camera = new Camera(this);
     public GameScene gameScene = new GameScene();
-
-    public List<Character> partyMembers = new ArrayList<>(List.of(defaultCharacter));
-    public PartyManager partyManager = new PartyManager(this, partyMembers);
 
     public CollisionChecker collisionChecker = new CollisionChecker(this);
     public TileManager tileManager = new TileManager(this);
@@ -57,6 +53,15 @@ public class GamePanel extends JPanel implements Runnable {
     public void startGameThread() {
         gameThread = new Thread(this);
         gameThread.start();
+        gameSetup();
+    }
+
+    public void gameSetup() {
+        camera.setPosition(player.x, player.y);
+
+        partyManager.addFollowerCharacter(partyManager.partyMembers.get(1));
+        partyManager.addFollowerCharacter(partyManager.partyMembers.get(0));
+        partyManager.addFollowerCharacter(partyManager.partyMembers.get(1));
     }
 
     @Override
@@ -82,8 +87,13 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
         player.update();
-        followerCharacter.update();
-        camera.setPosition(player.x, player.y);
+
+        for (FollowerCharacter followerCharacter : partyManager.followerCharacters) {
+            if (followerCharacter != null) {
+                followerCharacter.update();
+            }
+        }
+
     }
 
     public void paintComponent(Graphics graphics) {
@@ -98,7 +108,13 @@ public class GamePanel extends JPanel implements Runnable {
 
         List<Drawable> drawables = new ArrayList<>(tileManager.getDepthSortedTiles());
         drawables.add(player);
-        drawables.add(followerCharacter);
+
+        for (FollowerCharacter followerCharacter : partyManager.followerCharacters) {
+            if (followerCharacter != null) {
+                drawables.add(followerCharacter);
+            }
+        }
+
         drawables.sort(Comparator.comparingInt(Drawable::getDrawY));
 
         for (Drawable drawable : drawables) {

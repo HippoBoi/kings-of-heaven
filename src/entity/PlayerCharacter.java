@@ -15,7 +15,7 @@ public class PlayerCharacter extends Entity {
 
     public final int screenX;
     public final int screenY;
-    public ArrayList<int[]> storedPosition = new ArrayList<>();
+    public ArrayList<Position> storedPosition = new ArrayList<>();
 
     public PlayerCharacter(GamePanel gamePanel, KeyHandler keyHandler, Character character) {
         this.gamePanel = gamePanel;
@@ -95,7 +95,8 @@ public class PlayerCharacter extends Entity {
             x += directionX;
             y += directionY;
 
-            storedPosition.addFirst(new int[]{x, y});
+            String currentDirection = directions.getLast();
+            storedPosition.addFirst(new Position(x, y, currentDirection));
 
             if (storedPosition.size() > 50) {
                 storedPosition.removeLast();
