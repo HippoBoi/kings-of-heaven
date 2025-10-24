@@ -17,11 +17,13 @@ public class PartyManager {
     public PartyManager(GamePanel gamePanel) {
         List<Character> defaultParty = new ArrayList<>();
 
-        Character defaultCharacter = new Character("Rhay");
-        Character defaultFollowCharacter = new Character("Clean");
+        Character rhay = new Character("Rhay");
+        Character clean = new Character("Clean");
+        Character ramon = new Character("Ramon");
 
-        defaultParty.add(defaultCharacter);
-        defaultParty.add(defaultFollowCharacter);
+        defaultParty.add(rhay);
+        defaultParty.add(ramon);
+        defaultParty.add(clean);
 
         this.gamePanel = gamePanel;
         this.partyMembers = defaultParty;

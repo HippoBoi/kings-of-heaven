@@ -60,7 +60,7 @@ public class GamePanel extends JPanel implements Runnable {
         camera.setPosition(player.x, player.y);
 
         partyManager.addFollowerCharacter(partyManager.partyMembers.get(1));
-        partyManager.addFollowerCharacter(partyManager.partyMembers.get(0));
+        partyManager.addFollowerCharacter(partyManager.partyMembers.get(2));
         partyManager.addFollowerCharacter(partyManager.partyMembers.get(1));
     }
 
